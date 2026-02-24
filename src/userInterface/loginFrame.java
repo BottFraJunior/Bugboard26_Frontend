@@ -3,6 +3,8 @@ package userInterface;
 import javax.swing.*;
 import java.awt.*;
 
+import controller.loginController;
+
 public class loginFrame extends JFrame {	//Mockup M1 Frame
 
     private JTextField emailField;
@@ -54,6 +56,31 @@ public class loginFrame extends JFrame {	//Mockup M1 Frame
         loginButton = new JButton("Accedi");
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginButton.setCursor(new Cursor(Cursor.HAND_CURSOR)); 
+        
+        loginButton.addActionListener(e -> {
+            String insertedEmail = emailField.getText();
+            String insertedPswrd = new String(passwordField.getPassword());
+            
+            if (insertedEmail.isEmpty() || insertedPswrd.isEmpty()) {
+                JOptionPane.showMessageDialog(mainPanel, 
+                    "Campo email o campo password non completi. È pregato di riprovare.",
+                    "Login incompleto", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            loginController loginController = new loginController();
+            
+            boolean resultLogin = loginController.tryLogin(insertedEmail, insertedPswrd);
+            
+            if (resultLogin) {
+                JOptionPane.showMessageDialog(mainPanel, 
+                    "Login completato con successo!", "Accesso Consentito", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(mainPanel, 
+                    "Credenziali non valide. È pregato di riprovare.", "Login non riuscito", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        
         
 
         
