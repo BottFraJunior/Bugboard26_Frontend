@@ -1,4 +1,4 @@
-package userInterface;
+package view;
 
 import javax.swing.*;
 import java.awt.*;
@@ -62,22 +62,30 @@ public class loginFrame extends JFrame {	//Mockup M1 Frame
             String insertedPswrd = new String(passwordField.getPassword());
             
             if (insertedEmail.isEmpty() || insertedPswrd.isEmpty()) {
-                JOptionPane.showMessageDialog(mainPanel, 
-                    "Campo email o campo password non completi. È pregato di riprovare.",
-                    "Login incompleto", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(mainPanel, "Campo email o campo password non inseriti. È pregato di riprovare.",
+                		"Login non riuscito", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             
-            loginController loginController = new loginController();
+            controller.loginController controller = new controller.loginController();
             
-            boolean resultLogin = loginController.tryLogin(insertedEmail, insertedPswrd);
+            String[] userData = controller.tryLogin(insertedEmail, insertedPswrd);
             
-            if (resultLogin) {
+            if (userData != null) {		//The user exists
+                this.dispose(); 
+                
+                String ruolo = userData[0];
+                String nome = userData[1];
+                
+                if (ruolo.equalsIgnoreCase("AMMINISTRATORE")) {
+                    new adminDashboardFrame(nome).setVisible(true); //Send to Mockup M2.1 Frame
+                } else {
+                    new baseDashboardFrame(nome).setVisible(true);  //Send to Mockup M2 Frame
+                }
+                
+            } else {	//The user doesn't exists
                 JOptionPane.showMessageDialog(mainPanel, 
-                    "Login completato con successo!", "Accesso Consentito", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(mainPanel, 
-                    "Credenziali non valide. È pregato di riprovare.", "Login non riuscito", JOptionPane.ERROR_MESSAGE);
+                    "Credenziali errate o utente inesistente.", "Login non riuscito", JOptionPane.ERROR_MESSAGE);
             }
         });
         

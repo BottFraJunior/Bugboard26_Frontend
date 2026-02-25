@@ -1,5 +1,8 @@
 package controller;
 
+import com.google.gson.Gson;
+import model.utenteModel;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -7,29 +10,31 @@ import java.net.http.HttpResponse;
 
 public class loginController {
 
-    public boolean tryLogin(String email, String password) {
+    public String[] tryLogin(String email, String password) {
         try {
-            HttpClient client = HttpClient.newHttpClient();
+            String jsonPayload = String.format("{\"email\":\"%s\", \"password\":\"%s\"}", email, password);
 
+            HttpClient client = HttpClient.newHttpClient();
+            
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8080/api/utenti"))
-                    .GET()
+                    .uri(URI.create("http://localhost:8080/api/utenti/login"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            if (response.statusCode() == 200) {
-                String jsonAnswr = response.body();
+            if (response.statusCode() == 200 && !response.body().isEmpty()) {
                 
-                if (jsonAnswr.contains("\"email\":\"" + email + "\"") && 
-                		jsonAnswr.contains("\"password\":\"" + password + "\"")) {
-                    return true;
-                }
+                Gson gson = new Gson();
+                utenteModel userFound = gson.fromJson(response.body(), utenteModel.class);
+                
+                return new String[]{userFound.getRuolo(), userFound.getNome()};
             }
         } catch (Exception e) {
             System.err.println("Errore di connessione al server: " + e.getMessage());
         }
         
-        return false; 
+        return null; 
     }
 }
