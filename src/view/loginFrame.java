@@ -2,122 +2,80 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
-
 import controller.loginController;
 
-public class loginFrame extends JFrame {	//Mockup M1 Frame
+public class loginFrame extends defaultFrame {    //Mockup M1 Frame
 
     private JTextField emailField;
     private JPasswordField passwordField;
     private JButton loginButton;
 
     public loginFrame() {
-    	
-        setTitle("BugBoard26");
-        setSize(400, 350);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
-        setLocationRelativeTo(null); 
-        setResizable(false); 
+        super("Benvenuto su BugBoard26");
+        
+        setSize(400, 400); 
+        
+        toLeftPanel.setAlignmentX(CENTER_ALIGNMENT);
 
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS)); 
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
-
-        JLabel titleLabel = new JLabel("Benvenuto su BugBoard26");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
-        
-        JPanel formPanel = new JPanel();
-        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
-        formPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
         JLabel subtitleLabel = new JLabel("Inserisci le tue credenziali");
         subtitleLabel.setFont(new Font("Arial", Font.PLAIN, 15));
-        subtitleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        centerPanel.add(subtitleLabel);
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 20))); 
 
-        JSeparator separator = new JSeparator();
-        separator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
-        separator.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        JLabel emailLabel = new JLabel("Email:");
-        emailLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        emailField = new JTextField();
-        emailField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
-        emailField.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        JLabel passwordLabel = new JLabel("Password:");
-        passwordLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        passwordField = new JPasswordField();
-        passwordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
-        passwordField.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
+        emailField = buildInputField("Email:", new JTextField());
+        passwordField = buildInputField("Password:", new JPasswordField());
 
-        loginButton = new JButton("Accedi");
-        loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        loginButton.setCursor(new Cursor(Cursor.HAND_CURSOR)); 
+        loginButton = buildButton("Accedi", 150, 40); 
         
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        buttonPanel.setOpaque(false);
+        buttonPanel.add(Box.createHorizontalGlue()); 
+        buttonPanel.add(loginButton);               
+        buttonPanel.add(Box.createHorizontalGlue());
+        
+        toLeftPanel.add(Box.createVerticalGlue());   
+        toLeftPanel.add(buttonPanel);
+        toLeftPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+
         loginButton.addActionListener(e -> {
             String insertedEmail = emailField.getText();
             String insertedPswrd = new String(passwordField.getPassword());
             
             if (insertedEmail.isEmpty() || insertedPswrd.isEmpty()) {
-                JOptionPane.showMessageDialog(mainPanel, "Campo email o campo password non inseriti. È pregato di riprovare.",
-                		"Login non riuscito", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Campo email o campo password non inseriti. È pregato di riprovare.",
+                        "Login non riuscito", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             
-            controller.loginController controller = new controller.loginController();
-            
+            loginController controller = new loginController();
             String[] userData = controller.tryLogin(insertedEmail, insertedPswrd);
             
-            if (userData != null) {		//The user exists
+            if (userData != null) {     
                 this.dispose(); 
                 
                 String ruolo = userData[0];
                 String nome = userData[1];
                 
                 if (ruolo.equalsIgnoreCase("AMMINISTRATORE")) {
-                    new adminDashboardFrame(nome).setVisible(true); //Send to Mockup M2.1 Frame
+                    new adminDashboardFrame(nome).setVisible(true); // M2.1 Frame
                 } else {
-                    new baseDashboardFrame(nome).setVisible(true);  //Send to Mockup M2 Frame
+                    new baseDashboardFrame(nome).setVisible(true);  // M2 Frame
                 }
                 
-            } else {	//The user doesn't exists
-                JOptionPane.showMessageDialog(mainPanel, 
+            } else {    
+                JOptionPane.showMessageDialog(this, 
                     "Credenziali errate o utente inesistente.", "Login non riuscito", JOptionPane.ERROR_MESSAGE);
             }
         });
-        
-        
-
-        
-        formPanel.add(subtitleLabel);
-        formPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        formPanel.add(separator);
-        formPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        
-        formPanel.add(emailLabel);
-        formPanel.add(emailField);
-        formPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-        formPanel.add(passwordLabel);
-        formPanel.add(passwordField);
-        
-        mainPanel.add(titleLabel);
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 30)));
-        
-        mainPanel.add(formPanel); 
-        
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 30)));
-        mainPanel.add(loginButton);
-        
-        add(mainPanel);
     }
 
-
     public static void main(String[] args) {
-    	
-    	System.setProperty("sun.java2d.d3d", "false");	//Notifiche NVIDIA
+        System.setProperty("sun.java2d.d3d", "false");  //Notifiche NVIDIA
 
         SwingUtilities.invokeLater(() -> {
             loginFrame frame = new loginFrame();

@@ -9,20 +9,29 @@ public class adminDashboardFrame extends baseDashboardFrame {	//Mockup M2.1 Fram
     public adminDashboardFrame(String nomeUtente) {
         super(nomeUtente); 
 
-        centerPanel.add(Box.createRigidArea(new Dimension(0, 30)));
         JLabel adminSectionLabel = new JLabel("--- Operazioni Admin ---");
         adminSectionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         adminSectionLabel.setForeground(Color.RED);
-        centerPanel.add(adminSectionLabel);
-        centerPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-        JButton makeAccountBtn = buildDashboardBtn("Crea nuovo account", 250, 40);
-        JButton deleteAccountBtn = buildDashboardBtn("Elimina account", 250, 40);
+        adminPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        adminPanel.add(adminSectionLabel);
+        adminPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
-        centerPanel.add(makeAccountBtn);
-        centerPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-        centerPanel.add(deleteAccountBtn);
+
+        JButton makeAccountBtn = buildButton("Crea nuovo account");
+        makeAccountBtn.addActionListener(e -> {
+            this.setVisible(false);
+            new makeAccountFrame(this).setVisible(true); 
+        });
+        
+        JButton deleteAccountBtn = buildButton("Elimina account");
+
+        adminPanel.add(makeAccountBtn);
+        adminPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        adminPanel.add(deleteAccountBtn);
     }
+    
+
     
     public static void main(String[] args) {
     	
