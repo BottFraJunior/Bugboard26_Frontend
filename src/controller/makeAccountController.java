@@ -10,7 +10,7 @@ import java.net.http.HttpResponse;
 
 public class makeAccountController {
 
-    public boolean registerNewUser(utenteModel newUser) {
+    public String registerNewUser(utenteModel newUser) {
         try {
         	
             Gson gson = new Gson();
@@ -26,15 +26,15 @@ public class makeAccountController {
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            if (response.statusCode() == 200 || response.statusCode() == 201) {		//200 OK or 201 Created
-                return true;
-            } else {
-                System.err.println("Errore dal server: " + response.body());
+            if (response.statusCode() == 200) {
+                return "SUCCESS"; 
+            } else if (response.statusCode() == 409) {
+                return response.body(); 
             }
-
+            
         } catch (Exception e) {
-            System.err.println("Errore di connessione: " + e.getMessage());
+            System.err.println("Connection error: " + e.getMessage());
         }
-        return false;
+        return "ERROR";
     }
 }

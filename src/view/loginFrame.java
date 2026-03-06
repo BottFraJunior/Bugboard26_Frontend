@@ -61,7 +61,7 @@ public class loginFrame extends defaultFrame {    //Mockup M1 Frame
                 String ruolo = userData[0];
                 String nome = userData[1];
                 
-                if (ruolo.equalsIgnoreCase("AMMINISTRATORE")) {
+                if (ruolo.equalsIgnoreCase("AMMINISTRAZIONE")) {
                     new adminDashboardFrame(nome).setVisible(true); // M2.1 Frame
                 } else {
                     new baseDashboardFrame(nome).setVisible(true);  // M2 Frame
@@ -82,4 +82,6 @@ public class loginFrame extends defaultFrame {    //Mockup M1 Frame
             frame.setVisible(true); 
         });
     }
+    
+   
 }

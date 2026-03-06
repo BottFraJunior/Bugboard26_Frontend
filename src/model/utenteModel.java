@@ -6,7 +6,7 @@ public class utenteModel {
     private String email;
     private String password;
     private String ruolo;
-    private String id;
+    private String identificativo;
 
     public utenteModel() {}
 
@@ -15,13 +15,13 @@ public class utenteModel {
         this.email = email;
         this.password = password;
         this.ruolo = ruolo;
-        this.id = id;
+        this.identificativo = id;
     }
     
     
     public String getNome() { return nome; }
     public String getEmail() { return email; }
-    public String getPassword() { return password; }	//servono tutti i getter ?
+    public String getPassword() { return password; }	
     public String getRuolo() { return ruolo; }
-    public String getId() { return id; }
+    public String getId() { return identificativo; }
 }

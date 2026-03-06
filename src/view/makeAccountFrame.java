@@ -1,6 +1,7 @@
 package view;
 
 import controller.makeAccountController;
+import controller.passwordHashingUtils;
 import model.utenteModel;
 
 import javax.swing.*;
@@ -110,8 +111,7 @@ public class makeAccountFrame extends defaultFrame {
 
         backBtn.addActionListener(e -> {
             if (parentFrame != null) {
-                parentFrame.setEnabled(true);
-                parentFrame.toFront();
+                parentFrame.setVisible(true);
             }
             this.dispose();
         });
@@ -120,7 +120,8 @@ public class makeAccountFrame extends defaultFrame {
             String name = nameField.getText();
             String id = idField.getText();
             String email = emailField.getText();
-            String password = new String(passwordField.getPassword());
+            String pswrdRaw = new String(passwordField.getPassword());
+            
             
             String role = "";
             if (rolesGroup != null) {
@@ -133,30 +134,42 @@ public class makeAccountFrame extends defaultFrame {
                 }
             }
 
-            if (name.isEmpty() || id.isEmpty() || id.equals("0001") || email.isEmpty() || password.isEmpty() || role.isEmpty()) {
+            if (name.isEmpty() || id.isEmpty() || email.isEmpty() || pswrdRaw.isEmpty() || role.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
                         "Non tutti i campi sono stati completati. È pregato di riprovare.",
                         "Creazione utente non riuscita", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
+            String password = passwordHashingUtils.hashPassword(pswrdRaw);
             utenteModel newUser = new utenteModel(name, email, password, role, id);
             makeAccountController controller = new makeAccountController();
-            boolean result = controller.registerNewUser(newUser);
+            String result = controller.registerNewUser(newUser);
 
-            if (result) {
+            if (result.equals("SUCCESS")) {
                 JOptionPane.showMessageDialog(this,
                         "Utente " + name + " creato con successo!",
                         "Creazione riuscita", JOptionPane.INFORMATION_MESSAGE);
+                
                 if (parentFrame != null) {
-                    parentFrame.setEnabled(true);
-                    parentFrame.toFront();
+                    parentFrame.setVisible(true);
                 }
                 this.dispose();
+
+            } else if (result.equals("EMAIL_ERROR")) {
+                JOptionPane.showMessageDialog(this,
+                        "L'email inserita è già associata ad un altro account.",
+                        "Email già in uso", JOptionPane.WARNING_MESSAGE);
+                        
+            } else if (result.equals("ID_ERROR")) {
+                JOptionPane.showMessageDialog(this,
+                        "L'ID inserito (" + id + ") è già stato assegnato. È pregato di sceglierne un altro.",
+                        "ID non disponibile", JOptionPane.WARNING_MESSAGE);
+                        
             } else {
                 JOptionPane.showMessageDialog(this,
-                        "Errore durante la creazione.",
-                        "Creazione utente non riuscita", JOptionPane.ERROR_MESSAGE);
+                        "Errore nella creazione dell'utente.",
+                        "Creazione non riuscita", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
@@ -164,7 +177,7 @@ public class makeAccountFrame extends defaultFrame {
     public static void main(String[] args) {
         System.setProperty("sun.java2d.d3d", "false");
         SwingUtilities.invokeLater(() -> {
-            makeAccountFrame frame = new makeAccountFrame(null);
+            makeAccountFrame frame = new makeAccountFrame(new adminDashboardFrame("Amministratore"));
             frame.setVisible(true);
         });
     }
