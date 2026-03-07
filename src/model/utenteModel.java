@@ -23,5 +23,6 @@ public class utenteModel {
     public String getEmail() { return email; }
     public String getPassword() { return password; }	
     public String getRuolo() { return ruolo; }
-    public String getId() { return identificativo; }
+    
+    public void setEmail(String email) { this.email = email; } 
 }

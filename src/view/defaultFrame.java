@@ -7,6 +7,7 @@ public class defaultFrame extends JFrame {		//Standardized class for building fr
 
     protected JPanel centerPanel;
     protected JPanel toLeftPanel;
+    protected JLabel titleLabel;
 
     public defaultFrame(String mainTitle) {
         setTitle("BugBoard26");
@@ -22,7 +23,7 @@ public class defaultFrame extends JFrame {		//Standardized class for building fr
         centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 
-        JLabel titleLabel = new JLabel(mainTitle);                      
+        titleLabel = new JLabel(mainTitle);                      
         titleLabel.setFont(new Font("Arial", Font.BOLD, 22));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 

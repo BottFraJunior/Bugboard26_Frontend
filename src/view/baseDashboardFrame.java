@@ -7,14 +7,19 @@ public class baseDashboardFrame extends defaultFrame {		//Mockup M2 Frame
 	
 	protected JPanel adminPanel;
 
-    public baseDashboardFrame(String nomeUtente) {
+    public baseDashboardFrame(String nomeUtente, String emailUtente) {
         super("Bentornato, " + nomeUtente + ".");       
 
         setSize(400, 450); 
                 
         JButton reportBtn = buildButton("Segnala un nuovo issue");
+        reportBtn.addActionListener(e -> {
+        	this.setVisible(false);
+        	new reportIssueFrame(this, emailUtente).setVisible(true);
+        });
         centerPanel.add(reportBtn);
         centerPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        
         JButton summaryBtn = buildButton("Consulta il riepilogo issues");
         centerPanel.add(summaryBtn);
         
@@ -38,7 +43,7 @@ public class baseDashboardFrame extends defaultFrame {		//Mockup M2 Frame
         System.setProperty("sun.java2d.d3d", "false");  //Notifiche NVIDIA
 
         SwingUtilities.invokeLater(() -> {
-            baseDashboardFrame frame = new baseDashboardFrame("Francesco");
+            baseDashboardFrame frame = new baseDashboardFrame("Francesco", "");
             frame.setVisible(true); 
         });
     }

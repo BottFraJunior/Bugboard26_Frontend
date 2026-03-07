@@ -6,8 +6,8 @@ import java.awt.*;
 
 public class adminDashboardFrame extends baseDashboardFrame {	//Mockup M2.1 Frame
 
-    public adminDashboardFrame(String nomeUtente) {
-        super(nomeUtente); 
+    public adminDashboardFrame(String nomeUtente, String emailUtente) {
+        super(nomeUtente, emailUtente); 
 
         JLabel adminSectionLabel = new JLabel("--- Operazioni Admin ---");
         adminSectionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -38,7 +38,7 @@ public class adminDashboardFrame extends baseDashboardFrame {	//Mockup M2.1 Fram
     	System.setProperty("sun.java2d.d3d", "false");	//Notifiche NVIDIA
 
         SwingUtilities.invokeLater(() -> {
-            adminDashboardFrame frame = new adminDashboardFrame("Francesco");
+            adminDashboardFrame frame = new adminDashboardFrame("Francesco", null);
             frame.setVisible(true); 
         });
     }

@@ -39,7 +39,7 @@ public class loginController {
                 boolean resultAccess = passwordHashingUtils.verifyPassword(passwordInserita, databaseHash);
                 
                 if (resultAccess) {
-                    return new String[]{userFound.getRuolo(), userFound.getNome()};
+                    return new String[]{userFound.getRuolo(), userFound.getNome(), userFound.getEmail()};
                 } else {
                     return null; 
                 }
