@@ -18,9 +18,13 @@ public class baseDashboardFrame extends defaultFrame {		//Mockup M2 Frame
         	new reportIssueFrame(this, emailUtente).setVisible(true);
         });
         centerPanel.add(reportBtn);
-        centerPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         
         JButton summaryBtn = buildButton("Consulta il riepilogo issues");
+        summaryBtn.addActionListener(e -> {
+        	this.setVisible(false);
+        	new showIssueFrame(this, emailUtente).setVisible(true);
+        });
         centerPanel.add(summaryBtn);
         
         

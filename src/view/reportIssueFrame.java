@@ -7,7 +7,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.Enumeration;
 
-public class reportIssueFrame extends defaultFrame {
+public class reportIssueFrame extends defaultFrame {	//Mockup M3 Frame
 
     private JTextField titleField;
     private JTextArea descriptionArea;
@@ -143,10 +143,10 @@ public class reportIssueFrame extends defaultFrame {
                 }
             }
 
-            model.issueModel nuovaIssue = new model.issueModel(title, desc, type, priority, imageBytes, authorEmail);
+            model.issueModel newIssue = new model.issueModel(title, desc, type, priority, imageBytes, authorEmail, "Nessuno");
 
             controller.reportIssueController reportController = new controller.reportIssueController();
-            boolean success = reportController.submitIssue(nuovaIssue);
+            boolean success = reportController.submitIssue(newIssue);
 
             if (success) {
                 JOptionPane.showMessageDialog(this, 

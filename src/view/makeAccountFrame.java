@@ -14,7 +14,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.Enumeration;
 
-public class makeAccountFrame extends defaultFrame {
+public class makeAccountFrame extends defaultFrame {	//Mockup M5 Frame
 
     private JTextField nameField;
     private JTextField idField;
