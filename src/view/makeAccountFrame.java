@@ -177,7 +177,7 @@ public class makeAccountFrame extends defaultFrame {	//Mockup M5 Frame
     public static void main(String[] args) {
         System.setProperty("sun.java2d.d3d", "false");
         SwingUtilities.invokeLater(() -> {
-            makeAccountFrame frame = new makeAccountFrame(new adminDashboardFrame("Amministratore", ""));
+            makeAccountFrame frame = new makeAccountFrame(new adminDashboardFrame());
             frame.setVisible(true);
         });
     }

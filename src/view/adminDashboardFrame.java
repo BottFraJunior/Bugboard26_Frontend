@@ -6,8 +6,8 @@ import java.awt.*;
 
 public class adminDashboardFrame extends baseDashboardFrame {	//Mockup M2.1 Frame
 
-    public adminDashboardFrame(String nomeUtente, String emailUtente) {
-        super(nomeUtente, emailUtente); 
+    public adminDashboardFrame() {
+        super(); 
 
         JLabel adminSectionLabel = new JLabel("--- Operazioni Admin ---");
         adminSectionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -25,6 +25,10 @@ public class adminDashboardFrame extends baseDashboardFrame {	//Mockup M2.1 Fram
         });
         
         JButton deleteAccountBtn = buildButton("Elimina account");
+        deleteAccountBtn.addActionListener(e -> {
+        	new deleteUserFrame(this).setVisible(true);
+        	this.setVisible(false); 
+        });
 
         adminPanel.add(makeAccountBtn);
         adminPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -38,7 +42,7 @@ public class adminDashboardFrame extends baseDashboardFrame {	//Mockup M2.1 Fram
     	System.setProperty("sun.java2d.d3d", "false");	//Notifiche NVIDIA
 
         SwingUtilities.invokeLater(() -> {
-            adminDashboardFrame frame = new adminDashboardFrame("Francesco", null);
+            adminDashboardFrame frame = new adminDashboardFrame();
             frame.setVisible(true); 
         });
     }

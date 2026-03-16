@@ -1,6 +1,7 @@
 package model;
 
 public class issueModel {
+	private Long id;
     private String titolo;
     private String descrizione;
     private String tipologia;
@@ -32,5 +33,10 @@ public class issueModel {
     public byte[] getImmagine() { return immagine; }
     public utenteModel getAutore() { return autore; }
     public utenteModel getAssegnatario() { return assegnatario; }
+    public Long getId() { return id; }
+    
+    public void setStato(String stato) { this.stato = stato; }
+    public void setAssegnatario(utenteModel assegnatario) { this.assegnatario = assegnatario; }
+    public void setId(Long id) { this.id = id; }
 
 }

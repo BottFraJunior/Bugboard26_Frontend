@@ -14,7 +14,6 @@ import java.util.List;
 public class showIssueFrame extends defaultFrame {		//Mockup M4 Frame
 
     private JFrame parentFrame;
-    private String userEmail;
 
     private JTextField searchField;
     private JComboBox<String> filterCombo;
@@ -23,10 +22,9 @@ public class showIssueFrame extends defaultFrame {		//Mockup M4 Frame
     
     private List<model.issueModel> allIssues = new ArrayList<>();
 
-    public showIssueFrame(JFrame parentFrame, String userEmail) {
+    public showIssueFrame(JFrame parentFrame) {
         super("Riepilogo issues pubblicate");
         this.parentFrame = parentFrame;
-        this.userEmail = userEmail;
 
         setSize(650, 500);
         toLeftPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -238,7 +236,13 @@ public class showIssueFrame extends defaultFrame {		//Mockup M4 Frame
             public void mouseExited(MouseEvent e) { rowPanel.setBackground(Color.WHITE); }
             @Override
             public void mouseClicked(MouseEvent e) {
-            	new baseInfoIssueFrame(showIssueFrame.this, issue).setVisible(true);
+            	String role = model.sessionManager.getInstance().getCurrentUser().getRuolo();
+            	if ("AMMINISTRAZIONE".equalsIgnoreCase(role)) {
+            		new adminInfoIssueFrame(showIssueFrame.this, issue).setVisible(true);
+            	} else {
+            		new baseInfoIssueFrame(showIssueFrame.this, issue).setVisible(true);
+            	}
+            	
                 showIssueFrame.this.setVisible(false);	                
             }
         });
@@ -274,12 +278,20 @@ public class showIssueFrame extends defaultFrame {		//Mockup M4 Frame
         }
     }
     
+    //In order to keep updated the issues at each operation
+    public void refreshData() {
+        controller.showIssueController controller = new controller.showIssueController();
+        this.allIssues = controller.getAllIssues();
+        
+        updateFilteredList();
+    }
+    
     
 
     public static void main(String[] args) {
         System.setProperty("sun.java2d.d3d", "false");
         SwingUtilities.invokeLater(() -> {
-            new showIssueFrame(null, "test@email.com").setVisible(true);
+            new showIssueFrame(null).setVisible(true);
         });
     }
 }

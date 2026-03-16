@@ -62,10 +62,19 @@ public class loginFrame extends defaultFrame {    //Mockup M1 Frame
                 String nome = userData[1];
                 String email = userData[2];
                 
+               
+                model.utenteModel user = new model.utenteModel();
+                user.setRuolo(ruolo);
+                user.setNome(nome);
+                user.setEmail(email);
+                
+                model.sessionManager.getInstance().setCurrentUser(user);
+                
+                
                 if (ruolo.equalsIgnoreCase("AMMINISTRAZIONE")) {
-                    new adminDashboardFrame(nome, email).setVisible(true); // M2.1 Frame
+                    new adminDashboardFrame().setVisible(true); 
                 } else {
-                    new baseDashboardFrame(nome, email).setVisible(true);  // M2 Frame
+                    new baseDashboardFrame().setVisible(true);  
                 }
                 
             } else {    

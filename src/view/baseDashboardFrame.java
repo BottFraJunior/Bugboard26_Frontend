@@ -6,16 +6,17 @@ import java.awt.*;
 public class baseDashboardFrame extends defaultFrame {		//Mockup M2 Frame
 	
 	protected JPanel adminPanel;
+	protected String emailUtente = model.sessionManager.getInstance().getCurrentUser().getEmail();
 
-    public baseDashboardFrame(String nomeUtente, String emailUtente) {
-        super("Bentornato, " + nomeUtente + ".");       
+    public baseDashboardFrame() {
+        super("Bentornato, " + model.sessionManager.getInstance().getCurrentUser().getNome() + ".");       
 
         setSize(400, 450); 
                 
         JButton reportBtn = buildButton("Segnala un nuovo issue");
         reportBtn.addActionListener(e -> {
         	this.setVisible(false);
-        	new reportIssueFrame(this, emailUtente).setVisible(true);
+        	new reportIssueFrame(this).setVisible(true);
         });
         centerPanel.add(reportBtn);
         centerPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -23,7 +24,7 @@ public class baseDashboardFrame extends defaultFrame {		//Mockup M2 Frame
         JButton summaryBtn = buildButton("Consulta il riepilogo issues");
         summaryBtn.addActionListener(e -> {
         	this.setVisible(false);
-        	new showIssueFrame(this, emailUtente).setVisible(true);
+        	new showIssueFrame(this).setVisible(true);
         });
         centerPanel.add(summaryBtn);
         
@@ -47,7 +48,7 @@ public class baseDashboardFrame extends defaultFrame {		//Mockup M2 Frame
         System.setProperty("sun.java2d.d3d", "false");  //Notifiche NVIDIA
 
         SwingUtilities.invokeLater(() -> {
-            baseDashboardFrame frame = new baseDashboardFrame("Francesco", "");
+            baseDashboardFrame frame = new baseDashboardFrame();
             frame.setVisible(true); 
         });
     }

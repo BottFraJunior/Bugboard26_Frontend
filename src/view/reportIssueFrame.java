@@ -19,8 +19,10 @@ public class reportIssueFrame extends defaultFrame {	//Mockup M3 Frame
     
     private JFrame parentFrame;
     private File attachedImage = null; 
+    
+    private String authorEmail = model.sessionManager.getInstance().getCurrentUser().getEmail();
 
-    public reportIssueFrame(JFrame parentFrame, String authorEmail) {
+    public reportIssueFrame(JFrame parentFrame) {
         super("Descrivi il tipo di issue che vuoi segnalare.");
         this.parentFrame = parentFrame;
         setSize(450, 625); 
@@ -98,7 +100,6 @@ public class reportIssueFrame extends defaultFrame {	//Mockup M3 Frame
         JPanel publishBtnPanel = new JPanel();
         publishBtnPanel.setLayout(new BoxLayout(publishBtnPanel, BoxLayout.X_AXIS));
         publishBtnPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        publishBtnPanel.setOpaque(false);
         publishBtnPanel.add(Box.createHorizontalGlue()); 
         publishBtnPanel.add(publishBtn);                
         publishBtnPanel.add(Box.createHorizontalGlue()); 
@@ -210,7 +211,7 @@ public class reportIssueFrame extends defaultFrame {	//Mockup M3 Frame
     public static void main(String[] args) {
         System.setProperty("sun.java2d.d3d", "false");
         SwingUtilities.invokeLater(() -> {
-            new reportIssueFrame(null, null).setVisible(true);
+            new reportIssueFrame(null).setVisible(true);
         });
     }
 }

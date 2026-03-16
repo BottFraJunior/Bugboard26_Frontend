@@ -4,10 +4,11 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-public class baseInfoIssueFrame extends defaultFrame {
+public class baseInfoIssueFrame extends defaultFrame {		//Mockup M6 Frame
 
     protected JFrame parentFrame;
     protected model.issueModel issue;
+    protected JLabel assigneeLabel;
     
     protected JPanel adminExtensionPanel; 		//In order to add admin actions at the bottom
 
@@ -16,7 +17,7 @@ public class baseInfoIssueFrame extends defaultFrame {
         this.parentFrame = parentFrame;
         this.issue = issue;
 
-        setSize(500, 650);
+        setSize(500, 575);
         toLeftPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
@@ -75,7 +76,7 @@ public class baseInfoIssueFrame extends defaultFrame {
         usersPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         usersPanel.setOpaque(false);
         usersPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 30));
-
+        
         String assigneeText = "nessuno";
         if (issue.getAssegnatario() != null) {
             String name = issue.getAssegnatario().getNome() != null ? issue.getAssegnatario().getNome() : issue.getAssegnatario().getEmail();
@@ -83,14 +84,14 @@ public class baseInfoIssueFrame extends defaultFrame {
             assigneeText = name + (id.isEmpty() ? "" : " (#" + id + ")");
         }
 
-        String authorText = "Sconosciuto";
+        String authorText = "Utente Eliminato";		//An issue cannot be created by no one, so that's only the case after deleting an user
         if (issue.getAutore() != null) {
             String nome = issue.getAutore().getNome() != null ? issue.getAutore().getNome() : issue.getAutore().getEmail();
             String id = issue.getAutore().getIdentificativo() != null ? issue.getAutore().getIdentificativo() : "";
             authorText = nome + (id.isEmpty() ? "" : " (#" + id + ")");
         }
 
-        JLabel assigneeLabel = new JLabel("Assegnato a: " + assigneeText);
+        assigneeLabel = new JLabel("Assegnato a: " + assigneeText);
         assigneeLabel.setFont(new Font("Arial", Font.ITALIC, 12));
         
         JLabel authorLabel = new JLabel("Segnalato da: " + authorText);
@@ -117,6 +118,9 @@ public class baseInfoIssueFrame extends defaultFrame {
         backBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
         backBtn.addActionListener(e -> {
             if (this.parentFrame != null) {
+            	if (this.parentFrame instanceof showIssueFrame) {		  //Update the parentFrame to show the changes
+                    ((showIssueFrame) this.parentFrame).refreshData();
+                }
                 this.parentFrame.setVisible(true);
             }
             this.dispose();
