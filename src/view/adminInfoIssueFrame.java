@@ -57,7 +57,7 @@ public class adminInfoIssueFrame extends baseInfoIssueFrame {		//Mockup M6.1 Fra
         	if (success) {
         		JOptionPane.showMessageDialog(this, 
         				"Issue aggiornata correttamente!", 
-        				"Operazione completata", JOptionPane.INFORMATION_MESSAGE);
+        				"Issue completata", JOptionPane.INFORMATION_MESSAGE);
         		
         		if (this.parentFrame != null) {
         			if (this.parentFrame instanceof showIssueFrame) {		//Update the parentFrame to show the changes

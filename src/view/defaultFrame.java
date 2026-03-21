@@ -3,7 +3,7 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 
-public class defaultFrame extends JFrame {		//Standardized class for building frames 
+public abstract class defaultFrame extends JFrame {		//Standardized class for building frames 
 
     protected JPanel centerPanel;
     protected JPanel toLeftPanel;
@@ -72,6 +72,7 @@ public class defaultFrame extends JFrame {		//Standardized class for building fr
         btn.setMaximumSize(new Dimension(width, height));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btn.setAlignmentX(CENTER_ALIGNMENT);
+        btn.setFocusPainted(false);
         															//No default position
         return btn; 
     }

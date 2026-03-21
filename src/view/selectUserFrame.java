@@ -7,7 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-public abstract class selectUserFrame extends defaultFrame {
+public abstract class selectUserFrame extends defaultFrame {	//Standardized class for building user selection frames 
 
     protected JFrame parentFrame;
     protected model.utenteModel selectedUser = null; 

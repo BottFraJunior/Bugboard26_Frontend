@@ -44,12 +44,4 @@ public class baseDashboardFrame extends defaultFrame {		//Mockup M2 Frame
 
     }
     
-    public static void main(String[] args) {
-        System.setProperty("sun.java2d.d3d", "false");  //Notifiche NVIDIA
-
-        SwingUtilities.invokeLater(() -> {
-            baseDashboardFrame frame = new baseDashboardFrame();
-            frame.setVisible(true); 
-        });
-    }
 }

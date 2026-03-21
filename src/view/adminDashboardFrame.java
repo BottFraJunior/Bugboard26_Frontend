@@ -34,16 +34,5 @@ public class adminDashboardFrame extends baseDashboardFrame {	//Mockup M2.1 Fram
         adminPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         adminPanel.add(deleteAccountBtn);
     }
-    
-
-    
-    public static void main(String[] args) {
-    	
-    	System.setProperty("sun.java2d.d3d", "false");	//Notifiche NVIDIA
-
-        SwingUtilities.invokeLater(() -> {
-            adminDashboardFrame frame = new adminDashboardFrame();
-            frame.setVisible(true); 
-        });
-    }
+   
 }

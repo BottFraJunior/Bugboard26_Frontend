@@ -2,7 +2,14 @@ package view;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.DocumentFilter;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.Enumeration;
@@ -23,7 +30,7 @@ public class reportIssueFrame extends defaultFrame {	//Mockup M3 Frame
     private String authorEmail = model.sessionManager.getInstance().getCurrentUser().getEmail();
 
     public reportIssueFrame(JFrame parentFrame) {
-        super("Descrivi il tipo di issue che vuoi segnalare.");
+        super("Descrivi il tipo di issue che vuoi segnalare");
         this.parentFrame = parentFrame;
         setSize(450, 625); 
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
@@ -31,6 +38,18 @@ public class reportIssueFrame extends defaultFrame {	//Mockup M3 Frame
         toLeftPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         titleField = buildInputField("Titolo:", new JTextField());
+        
+        //Max. 30 characters for the title
+        ((AbstractDocument) titleField.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                if (fb.getDocument().getLength() + text.length() - length <= 30) {
+                    super.replace(fb, offset, length, text, attrs);
+                } else {
+                    Toolkit.getDefaultToolkit().beep();
+                }
+            }
+        });
 
         
         JLabel descLabel = new JLabel("Descrizione:");
@@ -120,52 +139,68 @@ public class reportIssueFrame extends defaultFrame {	//Mockup M3 Frame
         });
 
         publishBtn.addActionListener(e -> {
-            String title = titleField.getText();
-            String desc = descriptionArea.getText();
+            String title = titleField.getText().trim();
+            String desc = descriptionArea.getText().trim();
             String type = getSelectedRadio(typeGroup);
             String priority = getSelectedRadio(priorityGroup);
 
-            if (title.isEmpty() || desc.isEmpty()) {
-                JOptionPane.showMessageDialog(this, 
-                    "I campi Titolo e Descrizione sono obbligatori. È pregato di riprovare.", 
-                    "Errore di validazione", JOptionPane.WARNING_MESSAGE);
+            if (!isIssueInputValid(title, desc)) {
+                showValidationError("I campi Titolo e Descrizione sono obbligatori. È pregato di riprovare.");
                 return;
             }
 
-            byte[] imageBytes = null;
-            if (attachedImage != null) {
-                try {
-                    imageBytes = Files.readAllBytes(attachedImage.toPath());
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, 
-                        "Errore durante la lettura dell'immagine. Impossibile allegarla.", 
-                        "Errore File", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
+            byte[] imageBytes = extractImageBytes(attachedImage);
+            if (attachedImage != null && imageBytes == null) {
+                return; 
             }
 
             model.issueModel newIssue = new model.issueModel(title, desc, type, priority, imageBytes, authorEmail, "Nessuno");
-
             controller.reportIssueController reportController = new controller.reportIssueController();
             boolean success = reportController.submitIssue(newIssue);
 
-            if (success) {
-                JOptionPane.showMessageDialog(this, 
-                    "La tua issue è stata pubblicata con successo!", 
-                    "Issue segnalata", JOptionPane.INFORMATION_MESSAGE);
-                    
-                if (this.parentFrame != null) {
-                    this.parentFrame.setVisible(true);
-                }
-                this.dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, 
-                    "Errore di comunicazione con il server. È pregato di riprovare.", 
-                    "Errore Server", JOptionPane.ERROR_MESSAGE);
-            }
+            handlePublishResult(success);
         });
     }
 
+    public static boolean isIssueInputValid(String title, String description) {		//Tested
+        return !(title == null || title.trim().isEmpty() || 
+                 description == null || description.trim().isEmpty());
+    }
+
+    private void showValidationError(String message) {
+        JOptionPane.showMessageDialog(this, message, "Errore di validazione", JOptionPane.WARNING_MESSAGE);
+    }
+
+    private byte[] extractImageBytes(File imageFile) {
+        if (imageFile == null) return null;
+        
+        try {
+            return Files.readAllBytes(imageFile.toPath());
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, 
+                "Errore durante la lettura dell'immagine. Impossibile allegarla.", 
+                "Errore File", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+    }
+
+    private void handlePublishResult(boolean success) {
+        if (success) {
+            JOptionPane.showMessageDialog(this, 
+                "La tua issue è stata pubblicata con successo!", 
+                "Issue segnalata", JOptionPane.INFORMATION_MESSAGE);
+                
+            if (this.parentFrame != null) {
+                this.parentFrame.setVisible(true);
+            }
+            this.dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, 
+                "Errore di comunicazione con il server. È pregato di riprovare.", 
+                "Errore Server", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
 
     private JPanel buildBoxedRadioGroup(String labelText, String[] options, ButtonGroup group) {
         JPanel mainRow = new JPanel();
@@ -207,11 +242,5 @@ public class reportIssueFrame extends defaultFrame {	//Mockup M3 Frame
         }
         return "";
     }
-
-    public static void main(String[] args) {
-        System.setProperty("sun.java2d.d3d", "false");
-        SwingUtilities.invokeLater(() -> {
-            new reportIssueFrame(null).setVisible(true);
-        });
-    }
+    
 }

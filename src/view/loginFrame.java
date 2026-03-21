@@ -44,7 +44,7 @@ public class loginFrame extends defaultFrame {    //Mockup M1 Frame
 
         loginButton.addActionListener(e -> {
             String insertedEmail = emailField.getText();
-            String insertedPswrd = new String(passwordField.getPassword());
+            String insertedPswrd = new String(passwordField.getPassword());                     
             
             if (insertedEmail.isEmpty() || insertedPswrd.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Campo email o campo password non inseriti. È pregato di riprovare.",
@@ -83,15 +83,12 @@ public class loginFrame extends defaultFrame {    //Mockup M1 Frame
             }
         });
     }
-
+    
     public static void main(String[] args) {
-        System.setProperty("sun.java2d.d3d", "false");  //Notifiche NVIDIA
-
+        System.setProperty("sun.java2d.d3d", "false");	//Notifiche NVIDIA
         SwingUtilities.invokeLater(() -> {
-            loginFrame frame = new loginFrame();
-            frame.setVisible(true); 
+            new loginFrame().setVisible(true);
         });
     }
-    
-   
+
 }

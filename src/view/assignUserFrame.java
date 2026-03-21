@@ -17,7 +17,7 @@ public class assignUserFrame extends selectUserFrame {		//Mockup M8 Frame
     protected void performAction(model.utenteModel user) {
         
         int confirm = JOptionPane.showConfirmDialog(this, 
-            "Vuoi assegnare l'issue a " + user.getNome() + "?\nLo stato verrà automaticamente aggiornato.'", 
+            "Vuoi assegnare l'issue a " + user.getNome() + "?\nLo stato verrà automaticamente aggiornato.", 
             "Conferma Assegnazione", JOptionPane.YES_NO_OPTION);
         
         if (confirm == JOptionPane.YES_OPTION) {

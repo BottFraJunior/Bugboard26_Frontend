@@ -5,6 +5,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ public class showIssueFrame extends defaultFrame {		//Mockup M4 Frame
     private JTextField searchField;
     private JComboBox<String> filterCombo;
     private JComboBox<String> subTypeCombo; 
+    private JCheckBox assignedIssueCheck;
     private JPanel issuesListPanel;
     
     private List<model.issueModel> allIssues = new ArrayList<>();
@@ -35,17 +38,34 @@ public class showIssueFrame extends defaultFrame {		//Mockup M4 Frame
         topBarPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         topBarPanel.setOpaque(false);
 
-        searchField = new JTextField();
+        searchField = new JTextField("Cerca");
+        searchField.setForeground(Color.GRAY);
         searchField.setMaximumSize(new Dimension(Short.MAX_VALUE, 30));
         searchField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.GRAY),
                 new EmptyBorder(5, 5, 5, 5)));
+        
+        searchField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (searchField.getText().equals("Cerca")) {
+                	searchField.setText("");
+                	searchField.setForeground(Color.BLACK);
+                }
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (searchField.getText().isEmpty()) {
+                	searchField.setText("Cerca");
+                	searchField.setForeground(Color.GRAY);
+                }
+            }
+        });
 
         
         JPanel filterRow = new JPanel();
         filterRow.setLayout(new BoxLayout(filterRow, BoxLayout.X_AXIS));
         filterRow.setAlignmentX(Component.LEFT_ALIGNMENT);
-        filterRow.setOpaque(false);
         
         JLabel filterLabel = new JLabel("Filtra/Ordina per: ");
         
@@ -57,12 +77,18 @@ public class showIssueFrame extends defaultFrame {		//Mockup M4 Frame
         subTypeCombo = new JComboBox<>(types);
         subTypeCombo.setMaximumSize(new Dimension(120, 25));
         subTypeCombo.setVisible(false); 
+        
+        assignedIssueCheck = new JCheckBox("Issue assegnate");
+        assignedIssueCheck.setAlignmentX(Component.LEFT_ALIGNMENT);
+                
+        
 
         filterRow.add(filterLabel);
         filterRow.add(filterCombo);
         filterRow.add(Box.createRigidArea(new Dimension(10, 0))); 
         filterRow.add(subTypeCombo);
         filterRow.add(Box.createHorizontalGlue());
+        toLeftPanel.add(assignedIssueCheck);
 
         topBarPanel.add(searchField);
         topBarPanel.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -100,6 +126,8 @@ public class showIssueFrame extends defaultFrame {		//Mockup M4 Frame
         });
         
         subTypeCombo.addActionListener(e -> updateFilteredList());
+        
+        assignedIssueCheck.addActionListener(e -> updateFilteredList()); 
 
         updateFilteredList();	//First load without filters
 
@@ -117,49 +145,72 @@ public class showIssueFrame extends defaultFrame {		//Mockup M4 Frame
     }
     
 
-    
-    //Method that applies both the filters (search bar and tag)
+    //Method that applies the various filters to the issue showed
     private void updateFilteredList() {
         issuesListPanel.removeAll();
-    
-        String textFilter = searchField.getText().toLowerCase().trim();
+        
+        String textFilter = getCleanSearchText();
         String mainMode = (String) filterCombo.getSelectedItem();
         String selectedType = (String) subTypeCombo.getSelectedItem();
+        boolean showOnlyMine = assignedIssueCheck != null && assignedIssueCheck.isSelected();
+        String myEmail = model.sessionManager.getInstance().getCurrentUser().getEmail();
         
-        List<model.issueModel> filteredIssues = new ArrayList<>();
-    
-       
-        for (model.issueModel issue : allIssues) {
+        List<model.issueModel> filteredIssues = filterIssues(allIssues, textFilter, mainMode, selectedType, showOnlyMine, myEmail);
+        
+        sortIssues(filteredIssues, mainMode);
+        
+        renderFilteredIssues(filteredIssues);
+    }
+
+    private String getCleanSearchText() {
+        String rawSearchText = searchField.getText().trim();
+        if (rawSearchText.equals("Cerca") && Color.GRAY.equals(searchField.getForeground())) {
+            return ""; 
+        }
+        return rawSearchText.toLowerCase();
+    }
+
+    public static List<model.issueModel> filterIssues(List<model.issueModel> issues, String textFilter, 	//Tested
+    		String mainMode, String selectedType, boolean showOnlyMine, String myEmail) {
+        List<model.issueModel> result = new ArrayList<>();
+        
+        for (model.issueModel issue : issues) {
             String titolo = issue.getTitolo() != null ? issue.getTitolo() : "";
             String descrizione = issue.getDescrizione() != null ? issue.getDescrizione() : "";
             String tipologia = issue.getTipologia() != null ? issue.getTipologia() : "";
             
-            //Search bar filter
             boolean matchesSearch = textFilter.isEmpty() || 
-                    titolo.toLowerCase().contains(textFilter) || 
-                    descrizione.toLowerCase().contains(textFilter);
+                                    titolo.toLowerCase().contains(textFilter) || 
+                                    descrizione.toLowerCase().contains(textFilter);
             
-            //Tag 'Tipologia' filter
             boolean matchesType = true;
             if ("Tipologia".equals(mainMode) && selectedType != null) {
                 matchesType = tipologia.equalsIgnoreCase(selectedType);
             }
             
-            if (matchesSearch && matchesType) {
-                filteredIssues.add(issue);
+            boolean matchesAssignee = true;
+            if (showOnlyMine) {
+                if (issue.getAssegnatario() == null || !issue.getAssegnatario().getEmail().equalsIgnoreCase(myEmail)) {
+                    matchesAssignee = false;
+                }
+            }
+
+            if (matchesSearch && matchesType && matchesAssignee) {
+                result.add(issue);
             }
         }
-        
-        
-        //Tag 'Stato' and 'Priorità' filters
+        return result;
+    }
+
+    private void sortIssues(List<model.issueModel> filteredIssues, String mainMode) {
         if ("Stato".equals(mainMode)) {
             filteredIssues.sort(Comparator.comparingInt(issue -> getStatoWeight(issue.getStato())));
         } else if ("Priorità".equals(mainMode)) {
             filteredIssues.sort(Comparator.comparingInt(issue -> getPrioritaPeso(issue.getPriorita())));
         }
+    }
 
-        
-        
+    private void renderFilteredIssues(List<model.issueModel> filteredIssues) {
         if (filteredIssues.isEmpty()) {
             JLabel emptyLabel = new JLabel("Nessuna issue corrisponde ai criteri di ricerca.");
             emptyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -206,6 +257,21 @@ public class showIssueFrame extends defaultFrame {		//Mockup M4 Frame
     
     //Method that builds an Issue Info Row
     private JPanel createIssueRow(String title, String type, String priority, String status, model.issueModel issue) {
+        JPanel rowPanel = buildBaseRowPanel();
+
+        JLabel titleLabel = new JLabel(title);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 13));
+        rowPanel.add(titleLabel, BorderLayout.CENTER);
+
+        JPanel badgesPanel = buildBadgesPanel(type, priority, status);
+        rowPanel.add(badgesPanel, BorderLayout.EAST);
+
+        attachRowMouseListener(rowPanel, issue);
+
+        return rowPanel;
+    }
+
+    private JPanel buildBaseRowPanel() {
         JPanel rowPanel = new JPanel(new BorderLayout());
         rowPanel.setBackground(Color.WHITE);
         rowPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 60)); 
@@ -213,11 +279,11 @@ public class showIssueFrame extends defaultFrame {		//Mockup M4 Frame
                 BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
                 new EmptyBorder(10, 10, 10, 10)
         ));
+        rowPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return rowPanel;
+    }
 
-        JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 13));
-        rowPanel.add(titleLabel, BorderLayout.CENTER);
-
+    private JPanel buildBadgesPanel(String type, String priority, String status) {
         JPanel badgesPanel = new JPanel(new GridLayout(1, 3, 5, 0)); 
         badgesPanel.setPreferredSize(new Dimension(280, 40));
         badgesPanel.setOpaque(false);
@@ -225,29 +291,28 @@ public class showIssueFrame extends defaultFrame {		//Mockup M4 Frame
         badgesPanel.add(createBadge("<html><center>Tipologia:<br>" + type + "</center></html>", Color.WHITE));
         badgesPanel.add(createBadge("<html><center>Priorità:<br>" + priority + "</center></html>", getPriorityColor(priority)));
         badgesPanel.add(createBadge(status, getStatusColor(status)));
+        return badgesPanel;
+    }
 
-        rowPanel.add(badgesPanel, BorderLayout.EAST);
-
-        rowPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    private void attachRowMouseListener(JPanel rowPanel, model.issueModel issue) {
         rowPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) { rowPanel.setBackground(new Color(245, 245, 250)); }
+            
             @Override
             public void mouseExited(MouseEvent e) { rowPanel.setBackground(Color.WHITE); }
+            
             @Override
             public void mouseClicked(MouseEvent e) {
-            	String role = model.sessionManager.getInstance().getCurrentUser().getRuolo();
-            	if ("AMMINISTRAZIONE".equalsIgnoreCase(role)) {
-            		new adminInfoIssueFrame(showIssueFrame.this, issue).setVisible(true);
-            	} else {
-            		new baseInfoIssueFrame(showIssueFrame.this, issue).setVisible(true);
-            	}
-            	
-                showIssueFrame.this.setVisible(false);	                
+                String role = model.sessionManager.getInstance().getCurrentUser().getRuolo();
+                if ("AMMINISTRAZIONE".equalsIgnoreCase(role)) {
+                    new adminInfoIssueFrame(showIssueFrame.this, issue).setVisible(true);
+                } else {
+                    new baseInfoIssueFrame(showIssueFrame.this, issue).setVisible(true);
+                }
+                showIssueFrame.this.setVisible(false);                 
             }
         });
-
-        return rowPanel;
     }
 
    
@@ -286,12 +351,4 @@ public class showIssueFrame extends defaultFrame {		//Mockup M4 Frame
         updateFilteredList();
     }
     
-    
-
-    public static void main(String[] args) {
-        System.setProperty("sun.java2d.d3d", "false");
-        SwingUtilities.invokeLater(() -> {
-            new showIssueFrame(null).setVisible(true);
-        });
-    }
 }
