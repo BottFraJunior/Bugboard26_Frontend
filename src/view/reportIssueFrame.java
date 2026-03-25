@@ -8,8 +8,6 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.Enumeration;
@@ -139,12 +137,12 @@ public class reportIssueFrame extends defaultFrame {	//Mockup M3 Frame
         });
 
         publishBtn.addActionListener(e -> {
-            String title = titleField.getText().trim();
+            String title = titleField.getText();
             String desc = descriptionArea.getText().trim();
             String type = getSelectedRadio(typeGroup);
             String priority = getSelectedRadio(priorityGroup);
 
-            if (!isIssueInputValid(title, desc)) {
+            if (!isIssueInputValid(title, desc, 30)) {
                 showValidationError("I campi Titolo e Descrizione sono obbligatori. È pregato di riprovare.");
                 return;
             }
@@ -162,9 +160,13 @@ public class reportIssueFrame extends defaultFrame {	//Mockup M3 Frame
         });
     }
 
-    public static boolean isIssueInputValid(String title, String description) {		//Tested
-        return !(title == null || title.trim().isEmpty() || 
-                 description == null || description.trim().isEmpty());
+    public static boolean isIssueInputValid(String title, String description, int maxTitleLength) {		//Tested
+        if (title == null || title.trim().isEmpty() || 
+            description == null || description.trim().isEmpty()) {
+            return false;
+        }
+        
+        return title.length() <= maxTitleLength;
     }
 
     private void showValidationError(String message) {

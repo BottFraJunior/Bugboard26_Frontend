@@ -41,7 +41,7 @@ public class makeAccountFrame extends defaultFrame {	//Mockup M5 Frame
         nameField = new JTextField();
         nameField.setMaximumSize(new Dimension(Short.MAX_VALUE, 22));
         
-        applyCharactersLimit(nameField, 30);
+        applyCharactersLimit(nameField, 32);
 
 
         JLabel idLabel = new JLabel("    ID#: ");
@@ -79,9 +79,9 @@ public class makeAccountFrame extends defaultFrame {	//Mockup M5 Frame
 
         
         emailField = buildInputField("Email:", new JTextField());
-        applyCharactersLimit(emailField, 40);
+        applyCharactersLimit(emailField, 32);
         passwordField = buildInputField("Password:", new JPasswordField());
-        applyCharactersLimit(passwordField, 40);
+        applyCharactersLimit(passwordField, 32);
 
         String[] roles = {"Normale", "Amministrazione"};
         rolesGroup = buildRadioButtons("Tipologia account:", roles);
@@ -116,12 +116,17 @@ public class makeAccountFrame extends defaultFrame {	//Mockup M5 Frame
             String name = nameField.getText().trim();
             String id = idField.getText().trim();
             String email = emailField.getText().trim();
-            String pswrdRaw = new String(passwordField.getPassword());
+            String pswrdRaw = new String(passwordField.getPassword()).trim();
             String role = extractSelectedRole(rolesGroup);
 
-            if (!isRegistrationInputValid(name, id, email, pswrdRaw, role)) {
+            if (!isRegistrationInputValid(name, id, email, pswrdRaw, role, 4,32)) {
                 showRegistrationError("Non tutti i campi sono stati completati. È pregato di riprovare.", "Creazione utente non riuscita", JOptionPane.WARNING_MESSAGE);
                 return;
+            }
+            
+            if(!(id.trim().length() == 4)) {
+            	showRegistrationError("L'id scelto deve contenere 4 caratteri. È pregato di riprovare", "ID non valido", JOptionPane.WARNING_MESSAGE);
+            	return;
             }
 
             String password = passwordHashingUtils.hashPassword(pswrdRaw);
@@ -148,12 +153,21 @@ public class makeAccountFrame extends defaultFrame {	//Mockup M5 Frame
         return "";
     }
 
-    public static boolean isRegistrationInputValid(String name, String id, String email, String password, String role) {		//Tested
-        return !(name == null || name.isEmpty() ||
-                 id == null || id.isEmpty() ||
-                 email == null || email.isEmpty() ||
-                 password == null || password.isEmpty() ||
-                 role == null || role.isEmpty());
+    public static boolean isRegistrationInputValid(String name, String id, String email, String password, String role, 		//Tested
+    		int minLength, int maxLength) {
+        if (name == null || name.trim().isEmpty() ||
+            id == null || id.trim().isEmpty() ||
+            email == null || email.trim().isEmpty() ||
+            password == null || password.trim().isEmpty() ||
+            role == null || role.trim().isEmpty()) {
+            return false;
+        }
+
+        boolean isNameValid = name.trim().length() >= minLength && name.trim().length() <= maxLength;
+        boolean isEmailValid = email.trim().length() >= minLength && email.trim().length() <= maxLength;
+        boolean isPasswordValid = password.trim().length() >= minLength && password.trim().length() <= maxLength;
+
+        return isNameValid && isEmailValid && isPasswordValid;
     }
 
     private void showRegistrationError(String message, String title, int messageType) {

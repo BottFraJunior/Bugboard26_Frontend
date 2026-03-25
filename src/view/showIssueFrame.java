@@ -206,7 +206,7 @@ public class showIssueFrame extends defaultFrame {		//Mockup M4 Frame
         if ("Stato".equals(mainMode)) {
             filteredIssues.sort(Comparator.comparingInt(issue -> getStatoWeight(issue.getStato())));
         } else if ("Priorità".equals(mainMode)) {
-            filteredIssues.sort(Comparator.comparingInt(issue -> getPrioritaPeso(issue.getPriorita())));
+            filteredIssues.sort(Comparator.comparingInt(issue -> getPrioritaWeight(issue.getPriorita())));
         }
     }
 
@@ -243,7 +243,7 @@ public class showIssueFrame extends defaultFrame {		//Mockup M4 Frame
     }
 
     //Assign a weight to the 'Priorità' tag filter: Alta(1), Media(2), Bassa(3), Nessuna(4)
-    private int getPrioritaPeso(String priorita) {
+    private int getPrioritaWeight(String priorita) {
         if (priorita == null) return 4;
         switch (priorita.toLowerCase()) {
             case "alta": return 1;
