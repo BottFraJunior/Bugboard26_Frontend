@@ -46,26 +46,9 @@ public class makeAccountFrame extends defaultFrame {	//Mockup M5 Frame
 
         JLabel idLabel = new JLabel("    ID#: ");
         
-        idField = new JTextField("0001");
-        idField.setForeground(Color.GRAY);
-        idField.setMaximumSize(new Dimension(40, 22));
-        
-        idField.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (idField.getText().equals("0001")) {
-                    idField.setText("");
-                    idField.setForeground(Color.BLACK);
-                }
-            }
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (idField.getText().isEmpty()) {
-                    idField.setText("0001");
-                    idField.setForeground(Color.GRAY);
-                }
-            }
-        });
+        idField = new JTextField(4);
+        idField.setPreferredSize(new Dimension(60, 22)); 
+        idField.setMaximumSize(new Dimension(60, 22));
 
         applyCharactersLimit(idField, 4);
 
@@ -120,7 +103,7 @@ public class makeAccountFrame extends defaultFrame {	//Mockup M5 Frame
             String role = extractSelectedRole(rolesGroup);
 
             if (!isRegistrationInputValid(name, id, email, pswrdRaw, role, 4,32)) {
-                showRegistrationError("Non tutti i campi sono stati completati. È pregato di riprovare.", "Creazione utente non riuscita", JOptionPane.WARNING_MESSAGE);
+                showRegistrationError("Non tutti i campi sono stati completati. È pregato di inserire almeno 4 caratteri in ogni campo", "Creazione utente non riuscita", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             
